@@ -49,6 +49,7 @@ jobs:
           if [ "$RELEASE_URL" != "null" ]; then
             echo "Release already exists at $RELEASE_URL"
             echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
+            echo "UPLOAD_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$RELEASE_URL" | jq -r '.upload_url' | sed -e "s/{?name,label}//")" >> $GITHUB_ENV
           else
             echo "No existing release found for v${{ env.VERSION }}."
             echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
@@ -71,16 +72,13 @@ jobs:
       - name: Delete existing asset (if any)
         if: env.RELEASE_EXISTS == 'true'
         run: |
-          RELEASE_URL="https://api.github.com/repos/${{ github.repository }}/releases/tags/v${{ env.VERSION }}"
-          RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$RELEASE_URL")
-          
-          # Sprawdzanie, czy odpowiedź zawiera zasoby
-          ASSET_ID=$(echo "$RESPONSE" | jq -r '.assets[]? | select(.name == "quickshop-${{ env.VERSION }}.jar") | .id')
-      
+          ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/${{ github.repository }}/releases/tags/v${{ env.VERSION }} \
+            | jq -r '.assets[]? | select(.name == "quickshop-${{ env.VERSION }}.jar") | .id')
           if [ "$ASSET_ID" != "null" ]; then
             echo "Deleting existing asset ID $ASSET_ID"
             curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/${{ github.repository }}/releases/assets/$ASSET_ID"
+              https://api.github.com/repos/${{ github.repository }}/releases/assets/$ASSET_ID
           else
             echo "No existing asset found to delete."
           fi
@@ -92,7 +90,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ env.UPLOAD_URL }}  # Use the upload_url from the release check step
           asset_path: target/quickshop-${{ env.VERSION }}.jar  # Use the correct JAR filename
           asset_name: quickshop-${{ env.VERSION }}.jar
           asset_content_type: application/java-archive
