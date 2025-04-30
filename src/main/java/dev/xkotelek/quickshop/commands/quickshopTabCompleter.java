@@ -14,6 +14,9 @@ public class quickshopTabCompleter implements TabCompleter {
         List<String> suggestions = new ArrayList<>();
 
         if(args.length >= 1) {
+            if("test".startsWith(args[0].toLowerCase())) {
+                suggestions.add("test");
+            }
             if ("reload".startsWith(args[0].toLowerCase())) {
                 suggestions.add("reload");
             }

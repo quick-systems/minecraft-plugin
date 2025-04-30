@@ -1,5 +1,5 @@
 name: quickshop
-version: '1.2'
+version: '1.3'
 main: dev.xkotelek.quickshop.quickshop
 api-version: '1.21'
 authors: [xKotelek]
@@ -17,4 +17,7 @@ commands:
 permissions:
   quickshop.reload:
     description: Allows to reload config.
+    default: op
+  quickshop.test:
+    description: Allows to test the API connection.
     default: op
