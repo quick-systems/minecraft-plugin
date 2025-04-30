@@ -35,7 +35,8 @@ jobs:
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-      # Step 5: Check if the release already exists
+
+      # Step 5: Check if release exists
       - name: Check if release exists
         id: release_check
         env:
@@ -52,6 +53,7 @@ jobs:
             echo "No existing release found for v${{ env.VERSION }}."
             echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
           fi
+
       # Step 6: Create a new release only if it doesn't exist
       - name: Create GitHub Release
         id: create_release
@@ -65,9 +67,24 @@ jobs:
           draft: false
           prerelease: false
 
-      # Step 7: Upload the built quickshop.jar to the release
+      # Step 7: Delete the existing asset if it exists
+      - name: Delete existing asset (if any)
+        if: env.RELEASE_EXISTS == 'true'
+        run: |
+          ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/${{ github.repository }}/releases/tags/v${{ env.VERSION }} \
+            | jq -r '.assets[] | select(.name == "quickshop-${{ env.VERSION }}.jar") | .id')
+          if [ "$ASSET_ID" != "null" ]; then
+            echo "Deleting existing asset ID $ASSET_ID"
+            curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              https://api.github.com/repos/${{ github.repository }}/releases/assets/$ASSET_ID
+          else
+            echo "No existing asset found to delete."
+          fi
+
+      # Step 8: Upload the built quickshop.jar to the release
       - name: Upload quickshop.jar to release
-        if: env.RELEASE_EXISTS == 'false'  # Only upload if the release was created
+        if: env.RELEASE_EXISTS == 'false' || env.RELEASE_EXISTS == 'true'  # Upload if release exists or if new release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
