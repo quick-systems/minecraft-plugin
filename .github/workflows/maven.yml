@@ -14,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - uses: actions/checkout@v4
 
+      # Step 2: Set up JDK 22
       - name: Set up JDK 22
         uses: actions/setup-java@v4
         with:
@@ -23,32 +25,33 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # Step 3: Build with Maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Get version from plugin.yml
+      # Step 4: Extract version from pom.xml
+      - name: Get version from pom.xml
         id: get_version
         run: |
-          RAW_VERSION=$(grep '^version:' src/main/resources/plugin.yml | cut -d ' ' -f2)
-          VERSION=$(echo "$RAW_VERSION" | tr -d "'\"" | xargs)
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "TAG_NAME=v$VERSION" >> $GITHUB_ENV
-
+            # Step 5: Get or create release
       - name: Get or create GitHub Release
         id: get_or_create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          VERSION="v${{ env.VERSION }}"
           RELEASE_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.TAG_NAME }})
-          
+            https://api.github.com/repos/${{ github.repository }}/releases/tags/$VERSION)
+
           RELEASE_ID=$(echo "$RELEASE_RESPONSE" | jq -r '.id')
-          UPLOAD_URL=$(echo "$RELEASE_RESPONSE" | jq -r '.upload_url' | sed -e "s/{.*//")
+          UPLOAD_URL=$(echo "$RELEASE_RESPONSE" | jq -r '.upload_url' | sed -e "s/{?name,label}//")
 
           if [ "$RELEASE_ID" == "null" ]; then
-            echo "Creating new release ${{ env.TAG_NAME }}"
+            echo "Creating new release $VERSION"
             CREATE_RESPONSE=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
-              -d "{\"tag_name\": \"${{ env.TAG_NAME }}\", \"name\": \"Release ${{ env.TAG_NAME }}\", \"draft\": false, \"prerelease\": false}" \
+              -d "{\"tag_name\": \"$VERSION\", \"name\": \"Release $VERSION\", \"draft\": false, \"prerelease\": false}" \
               https://api.github.com/repos/${{ github.repository }}/releases)
 
             RELEASE_ID=$(echo "$CREATE_RESPONSE" | jq -r '.id')
@@ -58,7 +61,8 @@ jobs:
           echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
           echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
 
-      - name: Delete existing JAR from release (if exists)
+      # Step 6: Delete old JAR if exists
+      - name: Delete existing JAR from release (if any)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -66,14 +70,15 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_ID }}/assets \
             | jq -r '.[] | select(.name == "quickshop-${{ env.VERSION }}.jar") | .id')
 
-          if [ "$ASSET_ID" != "" ] && [ "$ASSET_ID" != "null" ]; then
+          if [ "$ASSET_ID" != "" ]; then
             echo "Deleting existing asset ID $ASSET_ID"
             curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
               https://api.github.com/repos/${{ github.repository }}/releases/assets/$ASSET_ID
           else
-            echo "No existing asset to delete."
+            echo "No existing JAR asset found to delete"
           fi
 
+      # Step 7: Upload quickshop.jar to release
       - name: Upload quickshop.jar to release
         uses: actions/upload-release-asset@v1
         env:
