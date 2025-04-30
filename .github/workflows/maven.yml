@@ -69,22 +69,14 @@ jobs:
           draft: false
           prerelease: false
 
-      # Step 7: Debug: List files in target directory
-      - name: List files in target directory
-        run: ls -la target/
-
-      # Step 8: Debug upload_url
-      - name: Debug upload_url
-        run: echo "UPLOAD_URL=${{ env.UPLOAD_URL }}"
-
-      # Step 9: Upload the built quickshop.jar to the release
+      # Step 7: Upload the built quickshop.jar to the release
       - name: Upload quickshop.jar to release
         if: env.RELEASE_EXISTS == 'false' || env.RELEASE_EXISTS == 'true'  # Upload if release exists or if new release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ env.UPLOAD_URL }}  # Use the upload_url from the release check step
+          upload_url: ${{ env.UPLOAD_URL }}  # Ensure the URL contains `{?name,label}`
           asset_path: target/quickshop-${{ env.VERSION }}.jar  # Use the correct JAR filename
           asset_name: quickshop-${{ env.VERSION }}.jar
           asset_content_type: application/java-archive
