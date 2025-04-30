@@ -29,11 +29,12 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      # Step 4: Extract version from pom.xml
+      # Step 4: Extract version from pom.xml and remove 'v' if it exists
       - name: Get version from pom.xml
         id: get_version
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          VERSION=${VERSION//v/}  # Usuwanie 'v' z wersji, jeśli występuje
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       # Step 5: Check if release exists
@@ -68,22 +69,15 @@ jobs:
           draft: false
           prerelease: false
 
-      # Step 7: Delete the existing asset if it exists
-      - name: Delete existing asset (if any)
-        if: env.RELEASE_EXISTS == 'true'
-        run: |
-          ASSET_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            https://api.github.com/repos/${{ github.repository }}/releases/tags/v${{ env.VERSION }} \
-            | jq -r '.assets[]? | select(.name == "quickshop-${{ env.VERSION }}.jar") | .id')
-          if [ "$ASSET_ID" != "null" ]; then
-            echo "Deleting existing asset ID $ASSET_ID"
-            curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-              https://api.github.com/repos/${{ github.repository }}/releases/assets/$ASSET_ID
-          else
-            echo "No existing asset found to delete."
-          fi
+      # Step 7: Debug: List files in target directory
+      - name: List files in target directory
+        run: ls -la target/
 
-      # Step 8: Upload the built quickshop.jar to the release
+      # Step 8: Debug upload_url
+      - name: Debug upload_url
+        run: echo "UPLOAD_URL=${{ env.UPLOAD_URL }}"
+
+      # Step 9: Upload the built quickshop.jar to the release
       - name: Upload quickshop.jar to release
         if: env.RELEASE_EXISTS == 'false' || env.RELEASE_EXISTS == 'true'  # Upload if release exists or if new release
         uses: actions/upload-release-asset@v1
