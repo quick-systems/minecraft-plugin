@@ -29,11 +29,12 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      # Step 4: Get version from plugin.yml
+      # Step 4: Get version from plugin.yml (cleaned)
       - name: Get version from plugin.yml
         id: get_version
         run: |
-          VERSION=$(grep '^version:' src/main/resources/plugin.yml | cut -d ' ' -f2)
+          RAW_VERSION=$(grep '^version:' src/main/resources/plugin.yml | cut -d ' ' -f2)
+          VERSION=$(echo "$RAW_VERSION" | tr -d "'" | xargs) # usuwamy apostrofy i spacje
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       # Step 5: Get or create release
