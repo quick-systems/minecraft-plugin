@@ -1,5 +1,5 @@
 name: quickshop
-version: '1.3'
+version: '1.3.5'
 main: dev.xkotelek.quickshop.quickshop
 api-version: '1.21'
 authors: [xKotelek]

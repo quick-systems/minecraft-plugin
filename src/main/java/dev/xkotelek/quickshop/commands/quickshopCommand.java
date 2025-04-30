@@ -45,15 +45,16 @@ public class quickshopCommand implements CommandExecutor {
         if(args[0].equalsIgnoreCase("test")) {
             if (sender.hasPermission("quickshop.test")) {
                 String apiKey = plugin.getConfig().getString("apiKey");
+                String shopId = plugin.getConfig().getString("shopId");
 
-                if (apiKey == null || apiKey.isEmpty()) {
+                if (apiKey == null || apiKey.isEmpty() || shopId == null || shopId.isEmpty()) {
                     sender.sendMessage("§d§lquickshop §r§5| §r§cAPI key not found in config.");
                     return true;
                 }
 
                 new Thread(() -> {
                     try {
-                        URL url = new URL("https://quickpay.kotelek.dev/api/plugin/test.php");
+                        URL url = new URL("https://quickpay.kotelek.dev/api/plugin/test.php/?shop_id=" + shopId);
                         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                         connection.setRequestMethod("GET");
                         connection.setRequestProperty("x-api-key", apiKey);
