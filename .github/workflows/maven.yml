@@ -50,7 +50,9 @@ jobs:
           if [ "$RELEASE_URL" != "null" ]; then
             echo "Release already exists at $RELEASE_URL"
             echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
-            echo "UPLOAD_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$RELEASE_URL" | jq -r '.upload_url' | sed -e "s/{?name,label}//")" >> $GITHUB_ENV
+            # Get the upload URL with {name,label} as required by GitHub
+            UPLOAD_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$RELEASE_URL" | jq -r '.upload_url' | sed -e "s/{?name,label}//")
+            echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
           else
             echo "No existing release found for v${{ env.VERSION }}."
             echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
@@ -76,7 +78,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ env.UPLOAD_URL }}  # Ensure the URL contains `{?name,label}`
+          upload_url: ${{ env.UPLOAD_URL }}  # Ensure the URL contains {name,label}
           asset_path: target/quickshop-${{ env.VERSION }}.jar  # Use the correct JAR filename
           asset_name: quickshop-${{ env.VERSION }}.jar
           asset_content_type: application/java-archive
+
