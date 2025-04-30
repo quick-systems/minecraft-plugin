@@ -1,0 +1,13 @@
+# quickshop configuration  @  https://github.com/xKotelek/quickshop-minecraft-plugin
+# by xKotelek              @  https://kotelek.dev
+
+debug: false
+shopId: ''
+apiKey: ''
+
+# Use %item% for item name and %player% for player name.
+boughtMessage:
+  - '&lPLAYER &d&l%player%&r&l BOUGHT'
+  - ''
+  - '  &d&l%item%'
+  - ''

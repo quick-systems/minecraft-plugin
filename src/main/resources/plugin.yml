@@ -1,0 +1,20 @@
+name: quickshop
+version: '1.1'
+main: dev.xkotelek.quickshop.quickshop
+api-version: '1.21'
+authors: [xKotelek]
+description: |
+  §d§lquickshop §r§5| §ra plugin for item shop maker called quickshop
+  §dby xKotelek @ https://kotelek.dev
+website: https://github.com/xKotelek/quickshop-minecraft-plugin
+
+commands:
+  quickshop:
+    description: quickshop command
+    usage: /quickshop <reload | help>
+    permission: ""
+    permission-message: You don't have permission to use that command!
+permissions:
+  quickshop.reload:
+    description: Allows to reload config.
+    default: op
