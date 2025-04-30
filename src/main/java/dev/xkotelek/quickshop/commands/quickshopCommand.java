@@ -17,7 +17,7 @@ public class quickshopCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            sender.sendMessage("§d§lquickshop §5v1.0");
+            sender.sendMessage("§d§lquickshop §5v" + plugin.getDescription().getVersion());
             sender.sendMessage("§dby xKotelek @ https://kotelek.dev");
             sender.sendMessage("");
             sender.sendMessage("§rAvailable commands:");

@@ -4,8 +4,10 @@ import dev.xkotelek.quickshop.commands.quickshopCommand;
 import dev.xkotelek.quickshop.commands.quickshopTabCompleter;
 import dev.xkotelek.quickshop.util.ConfigManager;
 import dev.xkotelek.quickshop.util.PurchaseManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
 
 public final class quickshop extends JavaPlugin {
 
@@ -28,6 +30,8 @@ public final class quickshop extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, purchaseManager::checkForPurchases, 0, 100);
 
         Bukkit.getLogger().info("quickshop | Enabled quickshop v" + getDescription().getVersion());
+
+        new dev.xkotelek.util.UpdateManager(this).checkForUpdates();
     }
 
     @Override
