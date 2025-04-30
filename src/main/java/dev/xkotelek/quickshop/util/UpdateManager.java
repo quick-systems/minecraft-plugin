@@ -55,7 +55,7 @@ public class UpdateManager {
 
                     if (isVersionOutdated(currentVersion, latestVersion)) {
                         Bukkit.getScheduler().runTask(plugin, () -> {
-                            String message = String.format("§cDostępna jest nowa wersja pluginu: §e%s§c. Obecna wersja: §e%s§c. Proszę zaktualizować plugin.", latestVersion, currentVersion);
+                            String message = "§d§lquickshop §r§5| §aThere is a new version available!\n§c" + currentVersion + " §5-> §a" + latestVersion + "§r\n\nPlease update the plugin at §dhttps://github.com/quick-systems/minecraft-plugin§r";
                             Bukkit.getOnlinePlayers().stream()
                                     .filter(player -> player.hasPermission("plugin.admin"))
                                     .forEach(player -> player.sendMessage(message));
