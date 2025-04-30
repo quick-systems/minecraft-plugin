@@ -21,6 +21,9 @@ public class UpdateManager {
     }
 
     public void checkForUpdates() {
+        // 15 minutes interval (15 * 60 * 20 ticków = 18000 ticków)
+        int checkInterval = 15 * 60 * 20;
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -67,7 +70,7 @@ public class UpdateManager {
                     plugin.getLogger().warning("quickshop | Couldn't fetch latest version: " + e.getMessage());
                 }
             }
-        }.runTaskAsynchronously(plugin);
+        }.runTaskTimerAsynchronously(plugin, 0, checkInterval);
     }
 
     private String parseTagName(String jsonResponse) {

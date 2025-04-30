@@ -54,7 +54,7 @@ public class quickshopCommand implements CommandExecutor {
 
                 new Thread(() -> {
                     try {
-                        URL url = new URL("https://quickpay.kotelek.dev/api/plugin/test.php/?shop_id=" + shopId);
+                        URL url = new URL("https://quickpay.kotelek.dev/api/plugin/test.php?shop_id=" + shopId);
                         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                         connection.setRequestMethod("GET");
                         connection.setRequestProperty("x-api-key", apiKey);
