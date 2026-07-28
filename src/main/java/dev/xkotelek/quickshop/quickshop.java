@@ -4,10 +4,10 @@ import dev.xkotelek.quickshop.commands.quickshopCommand;
 import dev.xkotelek.quickshop.commands.quickshopTabCompleter;
 import dev.xkotelek.quickshop.util.ConfigManager;
 import dev.xkotelek.quickshop.util.PurchaseManager;
+import dev.xkotelek.quickshop.util.UpdateManager;
 
-import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 public final class quickshop extends JavaPlugin {
 
@@ -16,27 +16,39 @@ public final class quickshop extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getLogger().info("quickshop | Enabling quickshop v" + getDescription().getVersion());
+        getLogger().info("Enabling quickshop v" + getDescription().getVersion());
 
         configManager = new ConfigManager(this);
-        purchaseManager = new PurchaseManager(this);
-
         configManager.saveDefaultConfig();
         configManager.checkAndFixConfig();
 
-        getCommand("quickshop").setExecutor(new quickshopCommand(this));
-        getCommand("quickshop").setTabCompleter(new quickshopTabCompleter());
+        purchaseManager = new PurchaseManager(this);
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, purchaseManager::checkForPurchases, 0, 100);
+        PluginCommand command = getCommand("quickshop");
+        if (command != null) {
+            command.setExecutor(new quickshopCommand(this));
+            command.setTabCompleter(new quickshopTabCompleter());
+        } else {
+            getLogger().severe("Command 'quickshop' is missing from plugin.yml - commands disabled.");
+        }
 
-        Bukkit.getLogger().info("quickshop | Enabled quickshop v" + getDescription().getVersion());
+        // Poll for paid orders. The task runs off the main thread so its HTTP
+        // never lags the server; command execution hops back on-thread inside.
+        long intervalTicks = Math.max(3, getConfig().getInt("checkIntervalSeconds", 5)) * 20L;
+        getServer().getScheduler().runTaskTimerAsynchronously(this, purchaseManager::pollOnce, 20L, intervalTicks);
 
-        new dev.xkotelek.util.UpdateManager(this).checkForUpdates();
+        new UpdateManager(this).checkForUpdates();
+
+        getLogger().info("Enabled quickshop v" + getDescription().getVersion());
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getLogger().info("quickshop | Disabling quickshop v" + getDescription().getVersion());
-        Bukkit.getLogger().info("quickshop | Disabled quickshop v" + getDescription().getVersion());
+        getServer().getScheduler().cancelTasks(this);
+        getLogger().info("Disabled quickshop v" + getDescription().getVersion());
+    }
+
+    public PurchaseManager getPurchaseManager() {
+        return purchaseManager;
     }
 }

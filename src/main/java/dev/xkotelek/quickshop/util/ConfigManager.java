@@ -38,6 +38,21 @@ public class ConfigManager {
             modified = true;
         }
 
+        if (!config.isSet("apiBaseUrl") || !(config.get("apiBaseUrl") instanceof String)) {
+            config.set("apiBaseUrl", "https://quickshop.kotelek.dev");
+            modified = true;
+        }
+
+        if (!config.isSet("checkIntervalSeconds") || !(config.get("checkIntervalSeconds") instanceof Integer)) {
+            config.set("checkIntervalSeconds", 5);
+            modified = true;
+        }
+
+        if (!config.isSet("deliverToOfflinePlayers") || !(config.get("deliverToOfflinePlayers") instanceof Boolean)) {
+            config.set("deliverToOfflinePlayers", true);
+            modified = true;
+        }
+
         if(!config.isSet("boughtMessage") || !(config.get("boughtMessage") instanceof Iterable<?>)) {
             config.set("boughtMessage", Arrays.asList(
                     "&lPLAYER &d&l%player%&r&l BOUGHT",

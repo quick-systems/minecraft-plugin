@@ -6,40 +6,26 @@
 
   <groupId>dev.xkotelek</groupId>
   <artifactId>quickshop</artifactId>
-  <version>1.4</version>
+  <version>1.5</version>
   <packaging>jar</packaging>
 
   <name>quickshop</name>
 
   <properties>
-    <java.version>21</java.version>
+    <!-- Target Java 8 bytecode so one jar runs on every server from 1.8 to the
+         latest (1.17+ JVMs all run Java 8 classes). -->
+    <maven.compiler.release>8</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <build>
     <defaultGoal>clean package</defaultGoal>
+    <finalName>quickshop-${project.version}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.3</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
     <resources>
@@ -62,21 +48,20 @@
   </repositories>
 
   <dependencies>
+    <!-- Compile against an older API so the plugin loads on 1.13 through the
+         latest. Only methods present since 1.8 are used, so it runs there too. -->
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.21.1-R0.1-SNAPSHOT</version>
+      <version>1.16.5-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.13</version>
-    </dependency>
+    <!-- Bundled by the server, so no need to shade it in. -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

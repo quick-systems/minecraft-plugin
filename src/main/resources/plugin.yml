@@ -1,23 +1,31 @@
 name: quickshop
-version: '1.4'
+version: '${project.version}'
 main: dev.xkotelek.quickshop.quickshop
-api-version: '1.21'
+# Minimum API level. Servers older than this ignore the field, so the plugin
+# still loads from 1.8 up to the latest.
+api-version: '1.13'
 authors: [xKotelek]
 description: |
   §d§lquickshop §r§5| §ra plugin for item shop maker called quickshop
   §dby xKotelek @ https://kotelek.dev
-website: https://github.com/xKotelek/quickshop-minecraft-plugin
+website: https://github.com/quick-systems/minecraft-plugin
 
 commands:
   quickshop:
     description: quickshop command
-    usage: /quickshop <reload | help>
-    permission: ""
-    permission-message: You don't have permission to use that command!
+    usage: /quickshop <reload | test | help>
+    aliases: [qs]
+
 permissions:
+  quickshop.admin:
+    description: Receive update notices and use every quickshop subcommand.
+    default: op
+    children:
+      quickshop.reload: true
+      quickshop.test: true
   quickshop.reload:
-    description: Allows to reload config.
+    description: Allows reloading the config.
     default: op
   quickshop.test:
-    description: Allows to test the API connection.
+    description: Allows testing the API connection.
     default: op

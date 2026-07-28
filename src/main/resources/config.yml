@@ -1,9 +1,27 @@
-# quickshop configuration  @  https://github.com/xKotelek/quickshop-minecraft-plugin
+# quickshop configuration  @  https://github.com/quick-systems/minecraft-plugin
 # by xKotelek              @  https://kotelek.dev
 
 debug: false
+
+# Your shop id and an API key (a credential from your quickshop account).
 shopId: ''
 apiKey: ''
+
+# Base URL of the quickshop API. Only change this if you self-host quickshop.
+apiBaseUrl: 'https://quickshop.kotelek.dev'
+
+# BungeeCord/Waterfall networks only. The internal address of THIS backend
+# server, exactly as set on the matching mode in your quickshop dashboard
+# (Modes -> internal address, e.g. 10.0.0.5:25565). This instance then runs
+# only the orders routed to it. Leave blank on a single (non-networked) server.
+serverInternalIp: ''
+
+# How often, in seconds, to check for new paid orders. Minimum 3.
+checkIntervalSeconds: 5
+
+# Deliver orders even when the buyer is offline. Set to false to hold an order
+# until the player is online - useful when the reward must target a live player.
+deliverToOfflinePlayers: true
 
 # Use %item% for item name and %player% for player name.
 boughtMessage:

@@ -1,4 +1,4 @@
-package dev.xkotelek.util;
+package dev.xkotelek.quickshop.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -60,7 +60,7 @@ public class UpdateManager {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             String message = "§d§lquickshop §r§5| §aThere is a new version available!\n§c" + currentVersion + " §5-> §a" + latestVersion + "§r\n\nPlease update the plugin at §dhttps://github.com/quick-systems/minecraft-plugin§r";
                             Bukkit.getOnlinePlayers().stream()
-                                    .filter(player -> player.hasPermission("plugin.admin"))
+                                    .filter(player -> player.hasPermission("quickshop.admin"))
                                     .forEach(player -> player.sendMessage(message));
                             plugin.getLogger().info(message);
                         });

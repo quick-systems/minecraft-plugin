@@ -3,6 +3,10 @@
 
 # Compiler output
 /target
+/out
+
+# macOS
+.DS_Store
 
 # Compiled class file
 *.class
