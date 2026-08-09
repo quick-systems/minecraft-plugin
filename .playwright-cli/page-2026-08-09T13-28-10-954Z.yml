@@ -1,0 +1,70 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e7] [cursor=pointer]:
+    - button "Open issues overlay" [ref=f4e8]:
+      - generic [ref=f4e12]:
+        - generic [ref=f4e13]: "0"
+        - generic [ref=f4e14]: "1"
+      - generic [ref=f4e15]: Issue
+    - button "Collapse issues badge" [ref=f4e16]
+  - banner [ref=f4e19]:
+    - generic [ref=f4e20]:
+      - link [ref=f4e21] [cursor=pointer]:
+        - /url: /
+        - img "quickshop logo" [ref=f4e22]
+      - navigation [ref=f4e23]:
+        - link "Homepage" [ref=f4e24] [cursor=pointer]:
+          - /url: /
+        - link "Pricing" [ref=f4e25] [cursor=pointer]:
+          - /url: /#pricing
+        - link "Documentation" [ref=f4e26] [cursor=pointer]:
+          - /url: /docs
+        - button "Login" [ref=f4e28] [cursor=pointer]
+  - generic [ref=f4e33]:
+    - paragraph [ref=f4e34]: TYPICAL MONTH
+    - generic [ref=f4e35]:
+      - generic [ref=f4e36]:
+        - generic [ref=f4e37]: REVENUE
+        - generic [ref=f4e39]: ORDERS
+        - generic [ref=f4e41]: avg 48.57 zl / day
+      - img [ref=f4e43]:
+        - generic [ref=f4e44]: 0 zl
+        - generic [ref=f4e46]: 50 zl
+        - generic [ref=f4e48]: 100 zl
+        - generic [ref=f4e50]: 150 zl
+        - generic [ref=f4e52]: "6"
+        - generic [ref=f4e53]: "0"
+        - generic [ref=f4e86]: "11.07"
+        - generic [ref=f4e87]: "16.07"
+        - generic [ref=f4e88]: "21.07"
+        - generic [ref=f4e89]: "26.07"
+        - generic [ref=f4e90]: "31.07"
+        - generic [ref=f4e91]: "05.08"
+        - generic [ref=f4e92]: "09.08"
+      - generic [ref=f4e93]:
+        - generic [ref=f4e94]:
+          - paragraph [ref=f4e95]: TOTAL
+          - paragraph [ref=f4e96]: 1457.00 zl
+        - generic [ref=f4e97]:
+          - paragraph [ref=f4e98]: PER DAY
+          - paragraph [ref=f4e99]: 48.57 zl
+        - generic [ref=f4e100]:
+          - paragraph [ref=f4e101]: BEST DAY
+          - paragraph [ref=f4e102]: 144.00 zl
+          - paragraph [ref=f4e103]: "23.07"
+        - generic [ref=f4e104]:
+          - paragraph [ref=f4e105]: ORDERS
+          - paragraph [ref=f4e106]: "69"
+          - paragraph [ref=f4e107]: 21.12 zl average
+  - generic [ref=f4e108]:
+    - paragraph [ref=f4e109]:
+      - text: We use essential cookies to keep you signed in and improve quickshop. See our
+      - link "privacy policy" [ref=f4e110] [cursor=pointer]:
+        - /url: /privacy
+      - text: .
+    - button "Got it" [ref=f4e112] [cursor=pointer]
+  - generic:
+    - dialog:
+      - heading [level=2]
+      - generic:
+        - button "Okay"
+  - alert [ref=f4e113]

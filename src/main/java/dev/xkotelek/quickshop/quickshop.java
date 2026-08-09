@@ -10,7 +10,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class quickshop extends JavaPlugin {
-
     /** Base URL of the quickshop API. Fixed - it is not a config option. */
     public static final String API_BASE_URL = "https://quickshop.kotelek.dev";
 
@@ -35,8 +34,6 @@ public final class quickshop extends JavaPlugin {
             getLogger().severe("Command 'quickshop' is missing from plugin.yml - commands disabled.");
         }
 
-        // Poll for paid orders. The task runs off the main thread so its HTTP
-        // never lags the server; command execution hops back on-thread inside.
         long intervalTicks = Math.max(3, getConfig().getInt("checkIntervalSeconds", 5)) * 20L;
         getServer().getScheduler().runTaskTimerAsynchronously(this, purchaseManager::pollOnce, 20L, intervalTicks);
 

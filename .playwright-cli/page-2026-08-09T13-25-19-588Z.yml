@@ -1,0 +1,56 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e4]:
+    - generic [ref=f2e5]:
+      - link [ref=f2e6] [cursor=pointer]:
+        - /url: /
+        - img "quickshop logo" [ref=f2e7]
+      - navigation [ref=f2e8]:
+        - link "Homepage" [ref=f2e9] [cursor=pointer]:
+          - /url: /
+        - link "Pricing" [ref=f2e10] [cursor=pointer]:
+          - /url: /#pricing
+        - link "Documentation" [ref=f2e11] [cursor=pointer]:
+          - /url: /docs
+        - button "Login" [ref=f2e13] [cursor=pointer]
+  - generic [ref=f2e18]:
+    - paragraph [ref=f2e19]: SINGLE HUGE SPIKE (LINE OVERSHOOT)
+    - generic [ref=f2e20]:
+      - generic [ref=f2e21]:
+        - generic [ref=f2e22]: REVENUE
+        - generic [ref=f2e24]: ORDERS
+        - generic [ref=f2e26]: avg 32.00 zl / day
+      - img [ref=f2e28]:
+        - generic [ref=f2e29]: zl0
+        - generic [ref=f2e31]: zl250
+        - generic [ref=f2e33]: zl500
+        - generic [ref=f2e35]: zl750
+        - generic [ref=f2e37]: zl1.0k
+        - generic [ref=f2e39]: "30"
+        - generic [ref=f2e40]: "0"
+        - generic [ref=f2e49]: "07.11"
+        - generic [ref=f2e50]: "07.16"
+        - generic [ref=f2e51]: "07.21"
+        - generic [ref=f2e52]: "07.26"
+        - generic [ref=f2e53]: "07.31"
+        - generic [ref=f2e54]: "08.05"
+        - generic [ref=f2e55]: "08.09"
+      - generic [ref=f2e56]:
+        - generic [ref=f2e57]:
+          - paragraph [ref=f2e58]: TOTAL
+          - paragraph [ref=f2e59]: 960.00 zl
+        - generic [ref=f2e60]:
+          - paragraph [ref=f2e61]: PER DAY
+          - paragraph [ref=f2e62]: 32.00 zl
+        - generic [ref=f2e63]:
+          - paragraph [ref=f2e64]: BEST DAY
+          - paragraph [ref=f2e65]: 900.00 zl
+          - paragraph [ref=f2e66]: "31.07"
+        - generic [ref=f2e67]:
+          - paragraph [ref=f2e68]: ORDERS
+          - paragraph [ref=f2e69]: "35"
+          - paragraph [ref=f2e70]: 27.43 zl average
+  - generic:
+    - dialog:
+      - heading [level=2]
+      - generic:
+        - button "Okay"

@@ -38,8 +38,6 @@ public class ConfigManager {
             modified = true;
         }
 
-        // Dropped setting - the API base is fixed now, so clean it out of
-        // configs written by older versions.
         if (config.isSet("apiBaseUrl")) {
             config.set("apiBaseUrl", null);
             modified = true;

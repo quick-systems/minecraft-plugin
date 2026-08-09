@@ -18,16 +18,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/**
- * Polls the quickshop API for paid-but-undelivered orders and runs them.
- *
- * All HTTP happens on an async thread so the main server thread never blocks.
- * Commands and broadcasts are hopped back onto the main thread, since the
- * Bukkit API is not thread safe. An order is marked delivered before its
- * command runs, so a retry can never deliver the same order twice.
- */
 public class PurchaseManager {
-
     private static final Gson GSON = new Gson();
     private static final int TIMEOUT_MS = 10000;
 
@@ -52,9 +43,6 @@ public class PurchaseManager {
         debug = plugin.getConfig().getBoolean("debug");
         shopId = plugin.getConfig().getString("shopId", "");
         apiKey = plugin.getConfig().getString("apiKey", "");
-        // Internal address of THIS backend server on a BungeeCord/Waterfall network.
-        // Must match the mode's internal address set in the quickshop dashboard, so
-        // this instance only runs orders routed to it. Blank on a single server.
         String rawIp = plugin.getConfig().getString("serverInternalIp", "");
         serverIp = rawIp == null ? "" : rawIp.trim();
         deliverToOffline = plugin.getConfig().getBoolean("deliverToOfflinePlayers", true);
@@ -66,10 +54,6 @@ public class PurchaseManager {
         return shopId != null && !shopId.isEmpty() && apiKey != null && !apiKey.isEmpty();
     }
 
-    /**
-     * One poll cycle. MUST be called off the main thread (the scheduler runs it
-     * asynchronously).
-     */
     public void pollOnce() {
         if (!configured()) {
             if (debug) plugin.getLogger().warning("shopId or apiKey is not set - skipping poll.");
@@ -123,8 +107,6 @@ public class PurchaseManager {
             }
 
             final String fPlayer = playerName;
-            // Mark delivered first (async). Only run the command once the API
-            // confirms it, so a retry never double-delivers.
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 boolean ok = markAsDelivered(orderId);
                 if (!ok) return;
@@ -179,10 +161,6 @@ public class PurchaseManager {
         }
     }
 
-    /**
-     * Who sees the sale. The API may send a per-order flag, which the shop uses
-     * to keep a purchase quiet; without one the config setting decides.
-     */
     private boolean shouldBroadcast(JsonObject order) {
         for (String key : new String[]{"broadcast", "broadcast_message"}) {
             if (order.has(key) && !order.get(key).isJsonNull()) {
