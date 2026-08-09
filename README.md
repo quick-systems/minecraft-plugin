@@ -66,15 +66,25 @@ built and released by the GitHub Actions workflow in
 |---|---|---|
 | `shopId` | The shop this server delivers for | quickshop dashboard, your shop, **Settings** |
 | `apiKey` | An API credential | quickshop dashboard, **Account**, Credentials, **Add new** |
-| `apiBaseUrl` | quickshop API base | `https://quickshop.kotelek.dev`, only change when self hosting |
 | `serverInternalIp` | This backend's internal address | Proxy networks only. Leave blank on a single server. |
 | `checkIntervalSeconds` | Poll interval, minimum 3 | default `5` |
 | `deliverToOfflinePlayers` | Deliver even when the buyer is offline | default `true` |
-| `boughtMessage` | Broadcast lines on a sale | supports `%player%` and `%item%` |
+| `broadcastBoughtMessage` | Announce the sale to everyone, or only to the buyer | default `true` |
+| `boughtMessage` | The lines sent on a sale | supports `%player%` and `%item%` |
 | `debug` | Verbose logging | `false` |
 
 Product commands use `{{player}}` (or `%player%`) as the placeholder, for
 example `lp user {{player}} parent add vip`.
+
+### Who sees the sale
+
+`broadcastBoughtMessage: true` announces every sale server-wide. Set it to
+`false` and only the buyer gets the message — nothing is sent if they are
+offline. An empty `boughtMessage` list sends nothing at all.
+
+The shop can also decide per order: an order carrying a `broadcast` boolean
+(`broadcast_message` is accepted too) overrides the config, so a quiet purchase
+stays quiet even on a server that broadcasts by default.
 
 ### Proxy networks
 
@@ -98,9 +108,9 @@ A single server needs none of this.
 ## Verify
 
 - `/quickshop test` should answer *"Connected to the API successfully."* If not,
-  re-check `shopId`, `apiKey` and `apiBaseUrl`.
+  re-check `shopId` and `apiKey`.
 - Make a test purchase in your shop. The plugin claims the order within a few
-  seconds, broadcasts the message and runs the product's command.
+  seconds, sends the message and runs the product's command.
 
 ## The quick systems family
 

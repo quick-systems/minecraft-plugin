@@ -36,9 +36,9 @@ public class PurchaseManager {
     private boolean debug;
     private String shopId;
     private String apiKey;
-    private String apiBaseUrl;
     private String serverIp;
     private boolean deliverToOffline;
+    private boolean broadcastBought;
     private List<String> boughtMessages;
 
     public PurchaseManager(quickshop plugin) {
@@ -52,13 +52,13 @@ public class PurchaseManager {
         debug = plugin.getConfig().getBoolean("debug");
         shopId = plugin.getConfig().getString("shopId", "");
         apiKey = plugin.getConfig().getString("apiKey", "");
-        apiBaseUrl = stripTrailingSlash(plugin.getConfig().getString("apiBaseUrl", "https://quickshop.kotelek.dev"));
         // Internal address of THIS backend server on a BungeeCord/Waterfall network.
         // Must match the mode's internal address set in the quickshop dashboard, so
         // this instance only runs orders routed to it. Blank on a single server.
         String rawIp = plugin.getConfig().getString("serverInternalIp", "");
         serverIp = rawIp == null ? "" : rawIp.trim();
         deliverToOffline = plugin.getConfig().getBoolean("deliverToOfflinePlayers", true);
+        broadcastBought = plugin.getConfig().getBoolean("broadcastBoughtMessage", true);
         boughtMessages = plugin.getConfig().getStringList("boughtMessage");
     }
 
@@ -78,7 +78,7 @@ public class PurchaseManager {
 
         final JsonArray orders;
         try {
-            String url = apiBaseUrl + "/api/plugin/orders/undelivered?shop_id=" + enc(shopId);
+            String url = quickshop.API_BASE_URL + "/api/plugin/orders/undelivered?shop_id=" + enc(shopId);
             if (serverIp != null && !serverIp.isEmpty()) url += "&ip=" + enc(serverIp);
             JsonObject response = httpGetJson(url);
             if (response == null) return;
@@ -111,6 +111,7 @@ public class PurchaseManager {
             if (playerName.isEmpty()) playerName = "unknown player";
             final String itemName = optString(order, "product", "unknown product");
             final String command = extractCommand(order, playerName, orderId);
+            final boolean broadcast = shouldBroadcast(order);
 
             // Hold delivery until the player is online, if configured that way.
             if (!deliverToOffline) {
@@ -128,7 +129,7 @@ public class PurchaseManager {
                 boolean ok = markAsDelivered(orderId);
                 if (!ok) return;
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    broadcastMessages(fPlayer, itemName);
+                    sendBoughtMessages(fPlayer, itemName, broadcast);
                     if (command != null && !command.isEmpty()) {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     }
@@ -161,7 +162,7 @@ public class PurchaseManager {
     /** Tells the API an order was handled. Runs off the main thread. */
     private boolean markAsDelivered(String orderId) {
         try {
-            String url = apiBaseUrl + "/api/plugin/orders/complete";
+            String url = quickshop.API_BASE_URL + "/api/plugin/orders/complete";
             String payload = "{\"shop_id\":\"" + shopId + "\",\"order_id\":\"" + orderId + "\"}";
             JsonObject resp = httpPostJson(url, payload);
             if (resp == null) return false;
@@ -178,15 +179,43 @@ public class PurchaseManager {
         }
     }
 
-    private void broadcastMessages(String playerName, String itemName) {
-        if (boughtMessages == null) return;
-        for (String message : boughtMessages) {
-            if (message == null || message.isEmpty()) {
-                Bukkit.broadcastMessage("");
-                continue;
+    /**
+     * Who sees the sale. The API may send a per-order flag, which the shop uses
+     * to keep a purchase quiet; without one the config setting decides.
+     */
+    private boolean shouldBroadcast(JsonObject order) {
+        for (String key : new String[]{"broadcast", "broadcast_message"}) {
+            if (order.has(key) && !order.get(key).isJsonNull()) {
+                try {
+                    return order.get(key).getAsBoolean();
+                } catch (Exception ignored) {
+                    // Not a boolean - try the next key, then the config.
+                }
             }
-            String out = message.replace("%player%", playerName).replace("%item%", itemName);
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', out));
+        }
+        return broadcastBought;
+    }
+
+    /** Sends the bought message to everyone, or only to the buyer. */
+    private void sendBoughtMessages(String playerName, String itemName, boolean broadcast) {
+        if (boughtMessages == null || boughtMessages.isEmpty()) return;
+
+        Player buyer = broadcast ? null : Bukkit.getPlayerExact(playerName);
+        if (!broadcast && buyer == null) {
+            if (debug) plugin.getLogger().info("Skipping the bought message - " + playerName + " is offline.");
+            return;
+        }
+
+        for (String message : boughtMessages) {
+            String out = message == null || message.isEmpty()
+                    ? ""
+                    : ChatColor.translateAlternateColorCodes('&',
+                            message.replace("%player%", playerName).replace("%item%", itemName));
+            if (broadcast) {
+                Bukkit.broadcastMessage(out);
+            } else {
+                buyer.sendMessage(out);
+            }
         }
     }
 
@@ -246,8 +275,4 @@ public class PurchaseManager {
         }
     }
 
-    private static String stripTrailingSlash(String url) {
-        if (url == null) return "";
-        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-    }
 }

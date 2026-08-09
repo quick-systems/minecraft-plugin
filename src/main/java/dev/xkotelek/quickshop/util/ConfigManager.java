@@ -38,8 +38,10 @@ public class ConfigManager {
             modified = true;
         }
 
-        if (!config.isSet("apiBaseUrl") || !(config.get("apiBaseUrl") instanceof String)) {
-            config.set("apiBaseUrl", "https://quickshop.kotelek.dev");
+        // Dropped setting - the API base is fixed now, so clean it out of
+        // configs written by older versions.
+        if (config.isSet("apiBaseUrl")) {
+            config.set("apiBaseUrl", null);
             modified = true;
         }
 
@@ -50,6 +52,11 @@ public class ConfigManager {
 
         if (!config.isSet("deliverToOfflinePlayers") || !(config.get("deliverToOfflinePlayers") instanceof Boolean)) {
             config.set("deliverToOfflinePlayers", true);
+            modified = true;
+        }
+
+        if (!config.isSet("broadcastBoughtMessage") || !(config.get("broadcastBoughtMessage") instanceof Boolean)) {
+            config.set("broadcastBoughtMessage", true);
             modified = true;
         }
 

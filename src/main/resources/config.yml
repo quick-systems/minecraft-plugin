@@ -7,9 +7,6 @@ debug: false
 shopId: ''
 apiKey: ''
 
-# Base URL of the quickshop API. Only change this if you self-host quickshop.
-apiBaseUrl: 'https://quickshop.kotelek.dev'
-
 # BungeeCord/Waterfall networks only. The internal address of THIS backend
 # server, exactly as set on the matching mode in your quickshop dashboard
 # (Modes -> internal address, e.g. 10.0.0.5:25565). This instance then runs
@@ -22,6 +19,12 @@ checkIntervalSeconds: 5
 # Deliver orders even when the buyer is offline. Set to false to hold an order
 # until the player is online - useful when the reward must target a live player.
 deliverToOfflinePlayers: true
+
+# Announce a sale to everyone on the server. Set to false to send the message
+# to the buyer only. The shop can override this per order: an order that carries
+# a "broadcast" flag wins over this setting. To send nothing at all, leave
+# boughtMessage empty.
+broadcastBoughtMessage: true
 
 # Use %item% for item name and %player% for player name.
 boughtMessage:

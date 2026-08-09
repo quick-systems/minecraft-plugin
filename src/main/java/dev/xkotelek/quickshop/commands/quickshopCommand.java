@@ -62,15 +62,13 @@ public class quickshopCommand implements CommandExecutor {
     private void runTest(CommandSender sender) {
         String apiKey = plugin.getConfig().getString("apiKey", "");
         String shopId = plugin.getConfig().getString("shopId", "");
-        String base = plugin.getConfig().getString("apiBaseUrl", "https://quickshop.kotelek.dev");
-        if (base.endsWith("/")) base = base.substring(0, base.length() - 1);
 
         if (apiKey.isEmpty() || shopId.isEmpty()) {
             sender.sendMessage(PREFIX + "§cSet shopId and apiKey in the config first.");
             return;
         }
 
-        final String url = base + "/api/plugin/test?shop_id=" + encode(shopId);
+        final String url = quickshop.API_BASE_URL + "/api/plugin/test?shop_id=" + encode(shopId);
         final String key = apiKey;
 
         // Off the main thread; results are sent back on it.
@@ -99,7 +97,7 @@ public class quickshopCommand implements CommandExecutor {
                 if (code >= 200 && code < 300 && sb.toString().contains("\"error\":false")) {
                     message = PREFIX + "§aConnected to the API successfully.";
                 } else {
-                    message = PREFIX + "§cCouldn't connect. Check your shopId, apiKey and apiBaseUrl.";
+                    message = PREFIX + "§cCouldn't connect. Check your shopId and apiKey.";
                 }
             } catch (Exception e) {
                 message = PREFIX + "§cError while testing the API: " + e.getMessage();

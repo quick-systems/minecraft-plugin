@@ -11,6 +11,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class quickshop extends JavaPlugin {
 
+    /** Base URL of the quickshop API. Fixed - it is not a config option. */
+    public static final String API_BASE_URL = "https://quickshop.kotelek.dev";
+
     private ConfigManager configManager;
     private PurchaseManager purchaseManager;
 
